@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: simple-ecommerce-application
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/users_login
+    username: root
+    password: admin@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
