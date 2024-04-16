@@ -1,4 +1,4 @@
-package com.omega.simpleecommerceapplication.emailVerification;
+package com.omega.simpleecommerceapplication.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

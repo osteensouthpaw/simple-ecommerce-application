@@ -1,4 +1,4 @@
-package com.omega.simpleecommerceapplication.registration;
+package com.omega.simpleecommerceapplication.user.registration;
 
 public record UserRegistrationRequest(
         String firstName,

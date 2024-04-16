@@ -1,7 +1,7 @@
 package com.omega.simpleecommerceapplication.user;
 
-import com.omega.simpleecommerceapplication.registration.UserRegistrationRequest;
-import com.omega.simpleecommerceapplication.registration.UserRegistrationService;
+import com.omega.simpleecommerceapplication.user.registration.UserRegistrationRequest;
+import com.omega.simpleecommerceapplication.user.registration.UserRegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +22,6 @@ public class UserController {
     @GetMapping
     public List<UserDto> findAllUsers() {
         return appUserService.getAllUsers();
-    }
-
-    @PostMapping("/new")
-    public String createUser(@RequestBody UserRegistrationRequest request) {
-        return registrationService.registerUser(request);
     }
 
 

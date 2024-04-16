@@ -1,4 +1,4 @@
-package com.omega.simpleecommerceapplication.token;
+package com.omega.simpleecommerceapplication.user.token;
 
 import com.omega.simpleecommerceapplication.user.AppUser;
 import jakarta.persistence.*;

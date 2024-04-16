@@ -11,3 +11,6 @@ spring:
     username: root
     password: admin@123
     driver-class-name: com.mysql.cj.jdbc.Driver
+logging:
+  level:
+    org.springframework.security: Debug

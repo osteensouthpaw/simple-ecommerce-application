@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
+import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,7 +21,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppUser implements UserDetails {
+public class AppUser implements UserDetails, Principal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -52,7 +55,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -83,5 +86,10 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.isEnabled;
+    }
+
+    @Override
+    public String getName() {
+        return String.format("%s %s", firstName, lastName);
     }
 }

@@ -1,11 +1,10 @@
-package com.omega.simpleecommerceapplication.token;
+package com.omega.simpleecommerceapplication.user.token;
 
-import com.omega.simpleecommerceapplication.emailVerification.EmailService;
+import com.omega.simpleecommerceapplication.email.EmailService;
 import com.omega.simpleecommerceapplication.exceptions.DuplicateResourceException;
 import com.omega.simpleecommerceapplication.exceptions.InvalidConfirmationTokenException;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import com.omega.simpleecommerceapplication.user.AppUser;
-import com.omega.simpleecommerceapplication.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
