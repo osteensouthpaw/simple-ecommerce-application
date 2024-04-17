@@ -27,16 +27,13 @@ public class JwtService {
                 .getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles);
-
+                .toList();
 
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                 .issuedAt(Instant.now())
                 .issuer("omega.com")
                 .subject(authentication.getName())
-                .claim("role", claims)
+                .claim("role", roles)
                 .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
                 .build();
 

@@ -23,12 +23,12 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import static com.omega.simpleecommerceapplication.user.AppUserRole.ADMIN;
 import static com.omega.simpleecommerceapplication.user.AppUserRole.CUSTOMER;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(GET, "/api/v1/users/confirm").permitAll()
-                        .requestMatchers(GET, "/api/v1/users").hasAuthority(CUSTOMER.name())
-                        .requestMatchers(GET, "/api/v1/users/**").hasAuthority(CUSTOMER.name())
+                        .requestMatchers(GET, "/api/v1/users").hasAnyAuthority(CUSTOMER.name().toUpperCase())
+                        .requestMatchers(GET, "/api/v1/users/**").authenticated()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(Customizer.withDefaults()))
@@ -82,5 +82,15 @@ public class SecurityConfig {
         var authProvider = new DaoAuthenticationProvider(passwordEncoder);
         authProvider.setUserDetailsService(userDetailsService);
         return new ProviderManager(authProvider);
+    }
+
+
+    
+    @Bean
+    public JwtGrantedAuthoritiesConverter authoritiesConverter() {
+        var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("roles");
+        authoritiesConverter.setAuthorityPrefix("ROLE_");
+        return authoritiesConverter;
     }
 }
