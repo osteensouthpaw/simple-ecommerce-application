@@ -7,7 +7,7 @@ spring:
       ddl-auto: update
 
   datasource:
-    url: jdbc:mysql://localhost:3306/users_login
+    url: jdbc:mysql://localhost:3306/ecommerce
     username: root
     password: admin@123
     driver-class-name: com.mysql.cj.jdbc.Driver
