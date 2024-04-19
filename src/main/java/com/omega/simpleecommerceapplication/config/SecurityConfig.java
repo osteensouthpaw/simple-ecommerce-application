@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/api/v1/users/confirm").permitAll()
                         .requestMatchers(GET, "/api/v1/users").hasAnyAuthority(CUSTOMER.name().toUpperCase())
                         .requestMatchers(GET, "/api/v1/users/**").authenticated()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session
