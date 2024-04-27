@@ -1,2 +1,6 @@
-package com.omega.simpleecommerceapplication.order;public class OrderRepository {
+package com.omega.simpleecommerceapplication.order;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface OrderRepository extends JpaRepository<ShopOrder, Integer> {
 }

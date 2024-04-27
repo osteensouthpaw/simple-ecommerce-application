@@ -8,16 +8,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Data
-@Table(name = "app_user")
+@Table(name = "system_users")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

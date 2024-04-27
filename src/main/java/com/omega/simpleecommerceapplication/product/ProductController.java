@@ -13,7 +13,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findProductById(@PathVariable Integer id) {
+    public ResponseEntity<?> findProductById(@PathVariable java.lang.Integer id) {
         Product product = productService.findProductById(id);
         return ResponseEntity.ok(product);
     }
@@ -25,7 +25,7 @@ public class ProductController {
 
 
     @GetMapping("/categories/{id}")
-    public List<Product> findProductsByCategoryId(@PathVariable Integer id) {
+    public List<Product> findProductsByCategoryId(@PathVariable java.lang.Integer id) {
         return productService.findProductsByCategory(id);
     }
 
@@ -35,13 +35,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Integer id,
+    public Product updateProduct(@PathVariable java.lang.Integer id,
                                  @RequestBody ProductUpdateRequest product) {
         return productService.updateProductById(id, product);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Integer id) {
+    public void deleteProduct(@PathVariable java.lang.Integer id) {
         productService.deleteProductById(id);
     }
 }

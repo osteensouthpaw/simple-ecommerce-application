@@ -35,10 +35,17 @@ public class AppUserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-
+    //returns user DTO
     public UserDto findById(Integer id) {
         return userRepository.findById(id)
                 .map(userDtoMapper)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exists"));
+    }
+
+
+    //returns the whole user entity
+    public AppUser findByUserById(Integer id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User does not exists"));
     }
 
