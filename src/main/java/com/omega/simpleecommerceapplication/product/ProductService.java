@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,10 @@ public class ProductService {
                 .imageUrl(request.imageUrl())
                 .productCategory(category)
                 .build();
+        return productRepository.save(product);
+    }
+
+    public Product save(Product product) {
         return productRepository.save(product);
     }
 
@@ -74,7 +79,6 @@ public class ProductService {
 
         if (!changes)
             throw new NoUpdateDetectedException("No changes detected");
-
         return productRepository.save(product);
     }
 

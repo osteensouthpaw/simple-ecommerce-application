@@ -64,6 +64,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ProductOutOfStockException.class)
+    public ResponseEntity<ApiException> handleException(ProductOutOfStockException exception,
+                                                        HttpServletRequest request) {
+        var apiError = new ApiException(
+                exception.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
 
 
 
