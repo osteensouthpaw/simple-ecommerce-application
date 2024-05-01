@@ -19,4 +19,9 @@ Welcome to our Simple Ecommerce Application! This application is designed to pro
 - **User Management**: Administer user accounts, permissions, and profiles with ease, ensuring efficient user management.
 - **Security**: Implement robust security measures to protect user data, prevent unauthorized access, and ensure compliance with data privacy regulations.
 
+## What I Learned
+
+### PayPal Integration
+
+During the development of this project, I learned how to integrate PayPal as a payment gateway.
 
