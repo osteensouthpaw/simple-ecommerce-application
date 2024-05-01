@@ -12,14 +12,14 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public List<ShopOrder> findAllOrders() {
+    public List<OrderResponse> findAllOrders() {
         return orderService.findAllOrders();
     }
 
 
     @GetMapping("/{id}")
-    public ShopOrder findOrderById(@PathVariable Integer id) {
-        return orderService.findOrderById(id);
+    public OrderResponse findOrderById(@PathVariable Integer id) {
+        return orderService.findById(id);
     }
 
 
