@@ -28,8 +28,16 @@ public class OrderService {
     private final OrderResponseMapper orderResponseMapper;
 
 
-    public List<ShopOrder> findAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderResponse> findAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(orderResponseMapper)
+                .toList();
+    }
+
+    public OrderResponse findById(Integer id) {
+        return orderRepository.findById(id)
+                .map(orderResponseMapper)
+                .orElseThrow(() -> new ResourceNotFoundException("order does not exists"));
     }
 
     public ShopOrder findOrderById(Integer id) {
