@@ -1,7 +1,7 @@
 package com.omega.simpleecommerceapplication.user;
 
 import com.omega.simpleecommerceapplication.user.registration.UserRegistrationService;
-import com.omega.simpleecommerceapplication.user.token.PageResponse;
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

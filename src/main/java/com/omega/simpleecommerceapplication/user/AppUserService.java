@@ -4,7 +4,7 @@ import com.omega.simpleecommerceapplication.exceptions.DuplicateResourceExceptio
 import com.omega.simpleecommerceapplication.exceptions.NoUpdateDetectedException;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import com.omega.simpleecommerceapplication.user.token.ConfirmationTokenService;
-import com.omega.simpleecommerceapplication.user.token.PageResponse;
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

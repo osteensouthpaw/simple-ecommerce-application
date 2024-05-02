@@ -1,7 +1,6 @@
-package com.omega.simpleecommerceapplication.user.token;
+package com.omega.simpleecommerceapplication.commons;
 
 import java.util.List;
-import java.util.Objects;
 
 public record PageResponse<T>(
         List<T> content,
