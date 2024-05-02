@@ -1,11 +1,9 @@
 package com.omega.simpleecommerceapplication.user;
 
-import com.omega.simpleecommerceapplication.user.registration.UserRegistrationRequest;
 import com.omega.simpleecommerceapplication.user.registration.UserRegistrationService;
+import com.omega.simpleecommerceapplication.user.token.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +18,13 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> findAllUsers() {
-        return appUserService.getAllUsers();
+    public PageResponse<UserDto> findAllUsers(
+                            @RequestParam(required = false, defaultValue = "0") int page,
+                            @RequestParam(required = false, defaultValue = "10") int size,
+                            @RequestParam(required = false, defaultValue = "userId") String sortField,
+                            @RequestParam(required = false, defaultValue = "ASC") String sortDirection
+    ) {
+        return appUserService.getAllUsers(page, size, sortField, sortDirection);
     }
 
 

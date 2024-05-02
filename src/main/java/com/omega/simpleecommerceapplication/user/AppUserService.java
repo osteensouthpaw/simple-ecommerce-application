@@ -4,14 +4,18 @@ import com.omega.simpleecommerceapplication.exceptions.DuplicateResourceExceptio
 import com.omega.simpleecommerceapplication.exceptions.NoUpdateDetectedException;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import com.omega.simpleecommerceapplication.user.token.ConfirmationTokenService;
+import com.omega.simpleecommerceapplication.user.token.PageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +31,38 @@ public class AppUserService implements UserDetailsService {
     }
 
 
-    public List<UserDto> getAllUsers() {
-        return userRepository
-                .findAll()
+    public PageResponse<UserDto> getAllUsers(
+                                        int page,
+                                        int size,
+                                        String sortField,
+                                        String sortDirection) {
+        Sort sortOrder = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(Sort.Direction.ASC, sortField) :
+                Sort.by(Sort.Direction.DESC, sortField);
+
+        Pageable pageRequest = PageRequest.of(page, size, sortOrder);
+
+        Page<AppUser> users = userRepository.findAll(pageRequest);
+        List<UserDto> userDtos = users
                 .stream()
                 .map(userDtoMapper)
-                .collect(Collectors.toList());
+                .toList();
+        return getUserDtoPageResponse(userDtos, users);
+    }
+
+
+    private PageResponse<UserDto> getUserDtoPageResponse(List<UserDto> userDtos,
+                                                         Page<AppUser> users) {
+        return new PageResponse<>(
+                userDtos,
+                users.getNumber(),
+                users.getSize(),
+                users.getTotalPages(),
+                users.getTotalElements(),
+                users.isFirst(),
+                users.isLast(),
+                users.getPageable().getOffset()
+        );
     }
 
     //returns user DTO
