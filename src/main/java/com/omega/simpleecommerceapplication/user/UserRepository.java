@@ -5,7 +5,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<AppUser, Integer>, PagingAndSortingRepository<AppUser, Integer> {
+public interface UserRepository extends JpaRepository<AppUser, Integer> {
     Optional<AppUser> findByEmail(String email);
     boolean existsByEmail(String email);
 }
