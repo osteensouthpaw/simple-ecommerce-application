@@ -17,7 +17,9 @@ public class OrderStatusService {
     }
 
     public List<OrderStatus> getAllOrderStatuses() {
-        return orderStatusRepository.findAll();
+        return orderStatusRepository.findAll()
+                .stream().limit(500)
+                .toList();
     }
 
     public OrderStatus addOderStatus(OrderStatus orderStatus) {

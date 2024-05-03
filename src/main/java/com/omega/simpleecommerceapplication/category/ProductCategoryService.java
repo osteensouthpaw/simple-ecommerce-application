@@ -1,7 +1,12 @@
 package com.omega.simpleecommerceapplication.category;
 
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +27,27 @@ public class ProductCategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("category not found"));
     }
 
-    public List<ProductCategory> findAllCategories() {
-        return categoryRepository.findAll();
+    public PageResponse<ProductCategory> findAllCategories(
+            int page,
+            int size,
+            String sortField,
+            String sortDirection
+    ) {
+        Sort sortOrder = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(Sort.Direction.ASC, sortField) :
+                Sort.by(Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        Page<ProductCategory> productCategories = categoryRepository.findAll(pageable);
+        return new PageResponse<>(
+                productCategories.getContent(),
+                productCategories.getNumber(),
+                productCategories.getSize(),
+                productCategories.getTotalPages(),
+                productCategories.getTotalElements(),
+                productCategories.isFirst(),
+                productCategories.isLast(),
+                productCategories.getPageable().getOffset()
+        );
     }
 
     public ProductCategory save(ProductCategory productCategory) {

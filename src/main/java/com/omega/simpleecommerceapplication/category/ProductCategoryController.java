@@ -1,5 +1,6 @@
 package com.omega.simpleecommerceapplication.category;
 
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +13,13 @@ public class ProductCategoryController {
     private final ProductCategoryService categoryService;
 
     @GetMapping
-    public List<ProductCategory> getAllCategories() {
-        return categoryService.findAllCategories();
+    public PageResponse<ProductCategory> getAllCategories(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "categoryName") String sortField,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDirection
+    ) {
+        return categoryService.findAllCategories(page, size, sortField, sortDirection);
     }
 
     @GetMapping("/{id}")

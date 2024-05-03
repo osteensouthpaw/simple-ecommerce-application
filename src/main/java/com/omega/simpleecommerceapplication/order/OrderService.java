@@ -1,5 +1,6 @@
 package com.omega.simpleecommerceapplication.order;
 
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import com.omega.simpleecommerceapplication.orderItem.OrderItem;
 import com.omega.simpleecommerceapplication.orderItem.OrderItemRequest;
@@ -12,6 +13,10 @@ import com.omega.simpleecommerceapplication.user.AppUser;
 import com.omega.simpleecommerceapplication.user.AppUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,10 +33,32 @@ public class OrderService {
     private final OrderResponseMapper orderResponseMapper;
 
 
-    public List<OrderResponse> findAllOrders() {
-        return orderRepository.findAll().stream()
+    public PageResponse<OrderResponse> findAllOrders(
+            int size,
+            int page,
+            String sortField,
+            String sortDirection
+    ) {
+        Sort sortOrder = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(Sort.Direction.ASC, sortField) :
+                Sort.by(Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(size, page, sortOrder);
+        Page<ShopOrder> orders = orderRepository.findAll(pageable);
+        List<OrderResponse> orderResponses = orders.getContent()
+                .stream()
                 .map(orderResponseMapper)
                 .toList();
+
+        return new PageResponse<>(
+                orderResponses,
+                orders.getNumber(),
+                orders.getSize(),
+                orders.getTotalPages(),
+                orders.getTotalElements(),
+                orders.isFirst(),
+                orders.isLast(),
+                orders.getPageable().getOffset()
+        );
     }
 
     public OrderResponse findById(Integer id) {

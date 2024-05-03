@@ -2,13 +2,15 @@ package com.omega.simpleecommerceapplication.product;
 
 import com.omega.simpleecommerceapplication.category.ProductCategory;
 import com.omega.simpleecommerceapplication.category.ProductCategoryService;
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import com.omega.simpleecommerceapplication.exceptions.NoUpdateDetectedException;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +35,28 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public List<Product> findProductsByCategory(Integer categoryId) {
+    public PageResponse<Product> findProductsByCategory(
+                                                Integer categoryId,
+                                                int size,
+                                                int page,
+                                                String sortField,
+                                                String sortDirection) {
+        Sort sortOrder = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(Sort.Direction.ASC, sortField) :
+                Sort.by(Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(size, page, sortOrder);
         ProductCategory category = categoryService.findById(categoryId);
-        return productRepository.findProductsByProductCategoryCategoryId(category.getCategoryId());
+        Page<Product> productsByCategoryId = productRepository.findProductsByCategoryId(category.getCategoryId(), pageable);
+        return new PageResponse<>(
+                productsByCategoryId.getContent(),
+                productsByCategoryId.getNumber(),
+                productsByCategoryId.getSize(),
+                productsByCategoryId.getTotalPages(),
+                productsByCategoryId.getTotalElements(),
+                productsByCategoryId.isFirst(),
+                productsByCategoryId.isLast(),
+                productsByCategoryId.getPageable().getOffset()
+        );
     }
 
     public Product findProductById(Integer productId) {
@@ -43,9 +64,31 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public PageResponse<Product> findAllProducts(int page,
+                                         int size,
+                                         String sortField,
+                                         String sortDirection) {
+        Sort sortOrder = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(Sort.Direction.ASC, sortField) :
+                Sort.by(Sort.Direction.DESC, sortField);
+        Pageable pageable = PageRequest.of(page, size, sortOrder);
+        Page<Product> products = productRepository.findAll(pageable);
+        return getProductPageResponse(products);
     }
+
+    private PageResponse<Product> getProductPageResponse(Page<Product> products) {
+        return new PageResponse<>(
+                products.getContent(),
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalPages(),
+                products.getTotalElements(),
+                products.isFirst(),
+                products.isLast(),
+                products.getPageable().getOffset()
+        );
+    }
+
 
     public Product updateProductById(Integer productId,
                                      ProductUpdateRequest updateRequest) {

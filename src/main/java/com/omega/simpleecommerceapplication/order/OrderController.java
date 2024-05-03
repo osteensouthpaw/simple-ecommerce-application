@@ -1,9 +1,8 @@
 package com.omega.simpleecommerceapplication.order;
 
+import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -12,8 +11,13 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public List<OrderResponse> findAllOrders() {
-        return orderService.findAllOrders();
+    public PageResponse<OrderResponse> findAllOrders(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "orderId") String sortField,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDirection
+    ) {
+        return orderService.findAllOrders(page, size, sortField, sortDirection);
     }
 
 

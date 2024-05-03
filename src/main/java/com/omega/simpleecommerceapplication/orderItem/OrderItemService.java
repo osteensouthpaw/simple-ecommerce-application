@@ -41,7 +41,7 @@ public class OrderItemService {
                 })
                 .toList();
 
-        return saveAll(orderItems);
+        return saveAll(orderItems).stream().limit(100).toList();
     }
 
 
