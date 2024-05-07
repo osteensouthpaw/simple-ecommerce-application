@@ -33,7 +33,7 @@ public class JwtService {
                 .issuedAt(Instant.now())
                 .issuer("omega.com")
                 .subject(authentication.getName())
-                .claim("role", roles)
+                .claim("roles", roles)
                 .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
                 .build();
 

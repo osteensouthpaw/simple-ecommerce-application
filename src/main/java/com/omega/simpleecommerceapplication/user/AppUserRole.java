@@ -1,7 +1,14 @@
 package com.omega.simpleecommerceapplication.user;
 
-public enum AppUserRole {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum AppUserRole implements GrantedAuthority {
     CUSTOMER,
     ADMIN,
-    MANAGER
+    MANAGER;
+
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }

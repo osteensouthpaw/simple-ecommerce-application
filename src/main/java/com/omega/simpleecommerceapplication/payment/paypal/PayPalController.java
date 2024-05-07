@@ -18,7 +18,6 @@ public class PayPalController {
     }
 
 
-
     @PostMapping("capture")
     public PayPalTransactionResponse completePayment(@RequestParam("token") String token) {
         return payPalService.completePayment(token);
