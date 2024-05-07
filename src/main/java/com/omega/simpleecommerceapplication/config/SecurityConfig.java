@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,20 +24,30 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-import static com.omega.simpleecommerceapplication.user.AppUserRole.CUSTOMER;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final RSAKeyProperties keyProperties;
+
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/api/v1/users/confirm",
+            "/api/v1/products",
+            "/api/v1/products/{id}",
+            "/api/v1/categories",
+            "/api/v1/categories/{id}",
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -44,12 +55,11 @@ public class SecurityConfig {
         http.cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers(GET, "/api/v1/users/confirm").permitAll()
-//                        .requestMatchers(GET, "/api/v1/users").hasAnyAuthority(CUSTOMER.name().toUpperCase())
-//                        .requestMatchers(GET, "/api/v1/users/**").authenticated()
-                        .anyRequest().permitAll())
+                        .requestMatchers(GET, PUBLIC_ENDPOINTS).permitAll()
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth
-                        .jwt(Customizer.withDefaults()))
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .jwtAuthenticationConverter(authenticationConverter())))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable);
@@ -77,8 +87,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationManager authManager(UserDetailsService userDetailsService,
-                                             PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
         var authProvider = new DaoAuthenticationProvider(passwordEncoder);
         authProvider.setUserDetailsService(userDetailsService);
         return new ProviderManager(authProvider);
@@ -87,10 +97,12 @@ public class SecurityConfig {
 
     
     @Bean
-    public JwtGrantedAuthoritiesConverter authoritiesConverter() {
+    public JwtAuthenticationConverter authenticationConverter() {
         var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
         authoritiesConverter.setAuthoritiesClaimName("roles");
         authoritiesConverter.setAuthorityPrefix("ROLE_");
-        return authoritiesConverter;
+        var jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 }

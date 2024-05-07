@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,17 +44,20 @@ public class ProductController {
     }
 
     @PostMapping("/new")
+    @PreAuthorize("hasAnyRole('ADMIN, MANAGER')")
     public Product createProduct(@RequestBody NewProductRequest request) {
         return productService.save(request);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN, MANAGER')")
     public Product updateProduct(@PathVariable Integer id,
                                  @RequestBody ProductUpdateRequest product) {
         return productService.updateProductById(id, product);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN, MANAGER')")
     public void deleteProduct(@PathVariable Integer id) {
         productService.deleteProductById(id);
     }

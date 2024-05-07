@@ -3,6 +3,7 @@ package com.omega.simpleecommerceapplication.user;
 import com.omega.simpleecommerceapplication.user.registration.UserRegistrationService;
 import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,11 +14,13 @@ public class UserController {
     private final AppUserService appUserService;
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto findUserById(@PathVariable Integer userId) {
         return appUserService.findById(userId);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserDto> findAllUsers(
                             @RequestParam(required = false, defaultValue = "0") int page,
                             @RequestParam(required = false, defaultValue = "10") int size,
@@ -34,7 +37,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public void updateUser(@PathVariable Integer userId,
                            @RequestBody UserUpdateRequest request) {
         appUserService.updateUser(userId, request);
@@ -42,6 +45,7 @@ public class UserController {
 
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(@PathVariable Integer userId) {
         appUserService.deleteUserById(userId);
     }
