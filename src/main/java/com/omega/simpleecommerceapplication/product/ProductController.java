@@ -2,14 +2,10 @@ package com.omega.simpleecommerceapplication.product;
 
 import com.omega.simpleecommerceapplication.commons.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,13 +14,13 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findProductById(@PathVariable java.lang.Integer id) {
-        Product product = productService.findProductById(id);
+    public ResponseEntity<ProductResponse> findProductById(@PathVariable @RequestPart Integer id) {
+        ProductResponse product = productService.findProductById(id);
         return ResponseEntity.ok(product);
     }
 
     @GetMapping
-    public PageResponse<Product> findAllProducts(@RequestParam(required = false, defaultValue = "0") int page,
+    public PageResponse<?> findAllProducts(@RequestParam(required = false, defaultValue = "0") int page,
                                                  @RequestParam(required = false, defaultValue = "10") int size,
                                                  @RequestParam(required = false, defaultValue = "productId") String sortField,
                                                  @RequestParam(required = false, defaultValue = "ASC") String sortDirection) {
@@ -45,8 +41,16 @@ public class ProductController {
 
     @PostMapping("/new")
     @PreAuthorize("hasAnyRole('ADMIN, MANAGER')")
-    public Product createProduct(@RequestBody NewProductRequest request) {
+    public ProductResponse createProduct(@RequestBody NewProductRequest request) {
         return productService.save(request);
+    }
+
+
+    @PostMapping("/uploadImage/{productId}")
+    public ResponseEntity<?> uploadProductImage(@RequestPart("file") MultipartFile file,
+                                                @PathVariable Integer productId) {
+        productService.upload(productId, file);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")

@@ -4,6 +4,6 @@ public record ProductDto(
         Integer productId,
         String productName,
         Double unitPrice,
-        String imageUrl
+        byte[] imageUrl
 ) {
 }

@@ -1,6 +1,9 @@
 spring:
   application:
     name: simple-ecommerce-application
+    file:
+      upload:
+        file-upload-path: ./uploads
 
   jpa:
     hibernate:
@@ -11,6 +14,11 @@ spring:
     username: root
     password: admin@123
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+
 logging:
   level:
     org.springframework.security: Debug

@@ -4,7 +4,6 @@ public record ProductUpdateRequest(
         String productName,
         Double unitPrice,
         String description,
-        int quantityInStock,
-        String imageUrl
+        int quantityInStock
 ) {
 }

@@ -5,30 +5,36 @@ import com.omega.simpleecommerceapplication.category.ProductCategoryService;
 import com.omega.simpleecommerceapplication.commons.PageResponse;
 import com.omega.simpleecommerceapplication.exceptions.NoUpdateDetectedException;
 import com.omega.simpleecommerceapplication.exceptions.ResourceNotFoundException;
+import com.omega.simpleecommerceapplication.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryService categoryService;
+    private final FileStorageService fileStorageService;
+    private final ProductResponseMapper productResponseMapper;
 
-    public Product save(NewProductRequest request) {
+    public ProductResponse save(NewProductRequest request) {
         ProductCategory category = categoryService.findById(request.productCategory().getCategoryId());
         Product product = Product.builder()
                 .productName(request.productName())
                 .unitPrice(request.unitPrice())
                 .description(request.description())
                 .quantityInStock(request.quantityInStock())
-                .imageUrl(request.imageUrl())
                 .productCategory(category)
                 .build();
-        return productRepository.save(product);
+        product = productRepository.save(product);
+        return productResponseMapper.apply(product);
     }
 
     public Product save(Product product) {
@@ -59,12 +65,19 @@ public class ProductService {
         );
     }
 
-    public Product findProductById(Integer productId) {
+    public ProductResponse findProductById(Integer productId) {
         return productRepository.findById(productId)
+                .map(productResponseMapper)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
-    public PageResponse<Product> findAllProducts(int page,
+    public Product getProductById(Integer productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+    }
+
+    public PageResponse<?> findAllProducts(int page,
                                          int size,
                                          String sortField,
                                          String sortDirection) {
@@ -72,27 +85,14 @@ public class ProductService {
                 Sort.by(Sort.Direction.ASC, sortField) :
                 Sort.by(Sort.Direction.DESC, sortField);
         Pageable pageable = PageRequest.of(page, size, sortOrder);
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = productRepository
+                .findAll(pageable);
         return getProductPageResponse(products);
     }
 
-    private PageResponse<Product> getProductPageResponse(Page<Product> products) {
-        return new PageResponse<>(
-                products.getContent(),
-                products.getNumber(),
-                products.getSize(),
-                products.getTotalPages(),
-                products.getTotalElements(),
-                products.isFirst(),
-                products.isLast(),
-                products.getPageable().getOffset()
-        );
-    }
-
-
     public Product updateProductById(Integer productId,
                                      ProductUpdateRequest updateRequest) {
-        Product product = findProductById(productId);
+        Product product = getProductById(productId);
 
         boolean changes = false;
 
@@ -114,19 +114,39 @@ public class ProductService {
             changes = true;
         }
 
-        //update product image
-        if (updateRequest.imageUrl() != null && !updateRequest.imageUrl().equals(product.getImageUrl())) {
-            product.setImageUrl(updateRequest.imageUrl());
-            changes = true;
-        }
-
         if (!changes)
             throw new NoUpdateDetectedException("No changes detected");
         return productRepository.save(product);
     }
 
     public void deleteProductById(Integer productId) {
-        Product product = findProductById(productId);
-        productRepository.delete(product);
+        productRepository.findById(productId)
+                .ifPresentOrElse(productRepository::delete,
+                        () -> {
+                    throw new ResourceNotFoundException("Product not found");
+                });
+    }
+
+    public void upload(Integer productId, MultipartFile file) {
+        Product product = getProductById(productId);
+        String picture = fileStorageService.savePicture(file, product);
+        product.setImageUrl(picture);
+        productRepository.save(product);
+    }
+
+
+    private PageResponse<?> getProductPageResponse(Page<Product> products) {
+        return new PageResponse<>(
+                products.getContent().stream()
+                        .map(productResponseMapper)
+                        .toList(),
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalPages(),
+                products.getTotalElements(),
+                products.isFirst(),
+                products.isLast(),
+                products.getPageable().getOffset()
+        );
     }
 }

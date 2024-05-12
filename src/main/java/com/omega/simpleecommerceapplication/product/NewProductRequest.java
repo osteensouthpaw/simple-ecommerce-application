@@ -7,7 +7,7 @@ public record NewProductRequest(
         Double unitPrice,
         String description,
         int quantityInStock,
-        String imageUrl,
+        byte[] imageUrl,
         ProductCategory productCategory
 ) {
 }

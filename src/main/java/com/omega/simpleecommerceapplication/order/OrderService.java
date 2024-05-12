@@ -24,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderService {
     private final OrderRepository orderRepository;
     private final AppUserService userService;
@@ -72,7 +73,6 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("order does not exists"));
     }
 
-    @Transactional
     public OrderResponse createOrder(NewOrderRequest orderRequest) {
         AppUser appUser = userService.findByUserById(orderRequest.appUserId());
         List<OrderItemRequest> items = orderRequest.items();
@@ -99,7 +99,7 @@ public class OrderService {
     private double calculateOrderTotal(List<OrderItemRequest> items) {
         double totalPrice = Double.MIN_VALUE;
         for (var item : items) {
-            Product product = productService.findProductById(item.productId());
+            Product product = productService.getProductById(item.productId());
             totalPrice += product.getUnitPrice() * item.quantity();
         }
         return totalPrice;
