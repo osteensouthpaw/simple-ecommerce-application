@@ -24,4 +24,5 @@ Welcome to our Simple Ecommerce Application! This application is designed to pro
 ### PayPal Integration
 
 During the development of this project, I learned how to integrate PayPal as a payment gateway.
+https://roadmap.sh/projects/ecommerce-api
 
